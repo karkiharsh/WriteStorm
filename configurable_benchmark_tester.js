@@ -58,13 +58,16 @@ async function sequentialTest() {
   let latencies = [];
 
   const startAll = performance.now();
-  for (let i = 0; i < CONFIG.clients * CONFIG.queriesPerClient; i++) {
-    var client = await createClient();
-    const lat = await runQuery(client);
+  const clients = await Promise.all(
+    Array.from({ length: CONFIG.clients }).map(() => createClient())
+  );
+  for (let c of clients) {
+    // var client = await createClient();
+    for ( let i = 0; i < CONFIG.queriesPerClient; i++) {
+    const lat = await runQuery(c);
     latencies.push(lat);
-    
-    client.end();
-
+    // client.end();
+    }
   }
   const endAll = performance.now();
 
